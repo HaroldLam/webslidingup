@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=8">
+	<link href="css/base.css" rel="stylesheet">
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.event.drag-2.2.js"></script>
+	<script src="hs/excanvas.js"></script>
+<title>SlidingUpWebApp</title>
+</head>
+<body>
+<script type="text/javascript">
+jQuery(function($){
+	var $dragElm = $('.drag');
+	$dragElm
+		.drag("start",function( ev, dd ){
+			dd.limit = {
+				top	   : 0,
+				bottom : this.parentNode.clientHeight - this.clientHeight
+			}
+		})
+		.drag("end",function( ev, dd ){
+			if(this.offsetTop<this.parentNode.clientHeight/2){
+				$(this).animate({top:0, opacity:1},300);
+				$(".follower").animate({top:$(".selected").height()-this.parentNode.clientHeight}, 300);
+				$(".photo").animate({top:this.parentNode.offsetTop-this.parentNode.offsetTop-this.parentNode.clientHeight/2}, 300);
+				$(".head").animate({opacity:0.8},300);
+			}else{
+				$(this).animate({top:"90%", opacity:0.8},300);
+				$(".follower").animate({top:0},300);
+				$(".photo").animate({top:0}, 300);
+				$(".head").animate({opacity:0},300);
+			}
+		})
+		.drag(function( ev, dd ){
+			dd.offsetY -= window.scrollY;
+			dd.offsetY = ev.clientY - this.clientHeight/2 - this.parentNode.offsetTop;
+
+			this.style.top =  Math.min( dd.limit.bottom, Math.max( dd.limit.top, dd.offsetY ) ) + 'px';
+			
+			var ratio = this.offsetTop / (this.parentNode.clientHeight-this.clientHeight);
+			var photoTop = 0-this.parentNode.clientHeight/2+ this.parentNode.clientHeight/2 * ratio;
+			
+			$(".photo").offset({top:photoTop});
+			var followerratio = this.offsetTop / (this.parentNode.clientHeight-this.clientHeight);
+			var followerTop = this.parentNode.offsetTop+this.parentNode.clientHeight/2+ this.parentNode.clientHeight/2 * followerratio;
+			$(".follower").offset({top:(this.parentNode.offsetTop+$(".selected").position().top + $(".selected").height())});
+			$(".selected").css("opacity", 0.8+1*(1-followerratio));
+			$(".head").css("opacity", 0.8*(1-followerratio));
+		},{ relative:true }); 
+
+});
+</script>
+
+<div id="containerpho">
+	<div class="head">
+		<div class="lefttop">1</div>
+		<div class="centertop">2</div>  
+		<div class="righttop">3</div>
+  </div>
+	<div class="photo"></div>
+</div>
+<div id="container">
+	<div class="transparent"></div>
+	<div class="drag selected">
+		<div class="leftbottom">1</div>
+		<div class="centerbottom">2</div>  
+		<div class="rightbottom">3</div>
+		</div>
+	<div class="follower"></div>
+</div>
+
+<style type="text/css">
+.photo{
+	height: 100%;
+	width: auto;
+	border: 1px solid #FFF;
+	z-index:-1;
+	background: #BCE;
+	background: url(img/background.jpg) no-repeat center center;
+	background-repeat: no-repeat;
+    background-size: contain;
+}
+.transparent{
+	height: 100%;
+	width: 100%;
+	background: #FFF;
+	opacity:0;
+}
+.follower{
+	height: 150%;
+	width: 100%;
+	border: 1px solid #FFF;
+	background: #FFF;
+	opacity:0.95;
+}
+.head{
+	height: 5%;
+	width: 100%;
+	top:0;
+	background: #4C4C33;
+	position:fixed;
+	opacity:0;
+	display:flex;
+	text-align:center;
+	vertical-align:middle;
+}
+.drag {
+	position: absolute;
+	border: 1px solid #FFF;
+	background: #FFF;
+	height: 10%;
+	width: 100%;
+	cursor: move;
+	bottom: 0;
+	opacity:0.8;
+	display:flex;
+	text-align:center;
+	vertical-align:middle;
+}
+.selected {
+    background-color: #4C4C33;
+    border-color: #FFF;
+    }
+.righttop {
+	width:10%;
+	height:100%;
+	float: left;
+}
+.lefttop {
+	width:10%;
+	height:100%;
+	float: left;
+}
+.centertop {
+	width:80%;
+	height:100%;
+	float: left;
+}
+.rightbottom {
+	height:100%;
+	width:33.3333%;
+	float: left;
+}
+.leftbottom {
+	height:100%;
+	width:33.3333%;
+	float: left;
+}
+.centerbottom {
+	height:100%;
+	width:33.3333%;
+	float: left;
+}
+#container {
+	position:fixed;
+	height: 60%;
+	top:5%;
+	width:100%;
+}
+#containerpho {
+	position:absolute;
+	height: 65%;
+	top:0;
+	width:100%;
+}
+</style>
+</body></html>
